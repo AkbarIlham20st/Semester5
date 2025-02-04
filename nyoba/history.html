@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Side Navbar Collapsible dengan Ikon</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <style>
+    /* Gaya untuk body */
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #fff;
+    }
+
+    /* Header di atas halaman */
+    .header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      background-color: #125938;
+      color: white;
+      text-align: center;
+      padding: 20px 0;
+      z-index: 1000;
+    }
+
+    .header h1 {
+      margin: 0;
+      font-size: 20px;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      height: 100%;
+      width: 250px;
+      position: fixed;
+      top: 62px;
+      left: 0;
+      background-color: #125938;
+      overflow-x: hidden;
+      transition: 0.3s;
+    }
+
+    /* Link di sidebar */
+    .sidebar a {
+      display: flex;
+      align-items: center;
+      padding: 10px 15px;
+      text-decoration: none;
+      font-size: 18px;
+      color: #ddd;
+      transition: 0.3s;
+    }
+
+    .sidebar a i {
+      margin-right: 10px; /* Jarak ikon dan teks */
+      font-size: 20px;
+    }
+
+    /* Hover efek pada link */
+    .sidebar a:hover {
+      background-color: #575757;
+      color: white;
+    }
+
+    /* Sidebar dalam kondisi collapsed */
+    .sidebar.collapsed {
+      width: 80px; /* Sidebar lebih kecil */
+    }
+
+    .sidebar.collapsed a {
+      justify-content: center;
+    }
+
+    .sidebar.collapsed a span {
+      display: none; /* Sembunyikan teks */
+    }
+
+    .sidebar.collapsed a i {
+      margin: 0; /* Hilangkan jarak pada ikon */
+    }
+
+    /* Konten utama */
+    .main-content {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px; 
+      margin-left: 250px;
+      margin-top: 70px;
+      padding: 20px;
+      transition: margin-left 0.3s;
+    }
+
+    .main-content.collapsed {
+      margin-left: 80px; /* Sesuaikan margin dengan sidebar collapsed */
+    }
+
+    /* Tombol toggle */
+    .toggle-btn {
+      position: fixed;
+      top: 10px;
+      left: 20px;
+      background-color: #11111149;
+      color: #fff;
+      border: none;
+      padding: 10px 15px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: 0.2s;
+      z-index: 1001;
+    }
+
+    .toggle-btn:hover {
+      background-color: #575757;
+    }
+    .container {
+        background-color: #6ba3be;
+        max-width: 200px;
+        width: 100%;
+        margin-top: 20px;
+        border: 3px solid #274d60;
+        border-radius: 10px;
+    }
+    h2 {
+        color: #ffffff;
+        font-size: large;
+        margin-left: 5px;
+        margin-bottom: 5px;
+    }
+    #webcam-stream {
+        width: 100%;
+        height: auto;
+        
+    }
+
+    .float{
+        display: flex;
+        position:fixed;
+        width:60px;
+        height:60px;
+        bottom:40px;
+        right:40px;
+        background-color:#0C9;
+        color:#FFF;
+        border-radius:50px;
+        box-shadow: 2px 2px 3px #999;
+        align-items: center;
+        font-size: 76pt;
+        text-decoration: none;
+        
+    }
+
+    .my-float{
+        margin-top:2px;
+    }
+    .hapus {
+      background-color: red;
+      border-radius: 3px;
+      margin-right: 3px;
+      font-size: large;
+      font-weight: bolder;
+      color: white;
+    }
+    .row {
+      margin: 3px;
+      display: flex;
+    }
+    a.button {
+    padding: 1px 6px;
+    border: 1px outset buttonborder;
+    border-radius: 3px;
+    color: buttontext;
+    background-color: #0c969c;
+    color: #fff;
+    font-weight: bold;
+    text-decoration: none;
+    }
+
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <div class="header">
+    <h1>SimuGuard</h1>
+  </div>
+
+  <!-- Tombol untuk toggle -->
+  <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
+
+  <!-- Sidebar -->
+  <div class="sidebar" id="sidebar">
+    <a href="/"><i>🏠</i><span>Home</span></a>
+    <a href="/history"><i>📑</i><span>History</span></a>
+  </div>
+  
+  <div>
+    <!-- Konten utama -->
+    <div class="main-content" id="main-content">
+        <div class="table-responsive">
+            <table class="table table-bordered" id="dataTable" width="70%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>Nama</th>
+                        <th>Nomor Induk Siswa</th>
+                        <th>Waktu</th>
+                        <th>File Screenshot</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>peh</td>
+                        <td>1332</td>
+                        <td>4560</td>
+                        <td>5fskljfs3</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+      
+    </div>
+  </div>
+  
+
+  <script>
+    // Fungsi untuk toggle sidebar
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      const mainContent = document.getElementById('main-content');
+      sidebar.classList.toggle('collapsed');
+      mainContent.classList.toggle('collapsed');
+    }
+  </script>
+  <script>
+    async function loadTableData() {
+        try {
+            const response = await fetch('http://localhost:3000/api/history');
+            const data = await response.json();
+
+            const tableBody = document.querySelector('#dataTable tbody');
+            tableBody.innerHTML = ''; // Clear table
+
+            if (!data.length) {
+                tableBody.innerHTML = `<tr><td colspan="4" style="text-align:center;">No records found.</td></tr>`;
+                return;
+            }
+
+            data.forEach(item => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${item.nama}</td>
+                    <td>${item.nomor_induk_siswa}</td>
+                    <td>${item.waktu}</td>
+                    <td><a href="${item.file_path}" target="_blank">Lihat Screenshot</a></td>
+                `;
+                tableBody.appendChild(row);
+            });
+        } catch (error) {
+            console.error('Gagal memuat data:', error);
+            alert('Gagal memuat data dari server.');
+        }
+    }
+
+  
+    // Panggil fungsi saat halaman dimuat
+    document.addEventListener('DOMContentLoaded', loadTableData);
+  </script>
+  
+  
+</body>
+</html>

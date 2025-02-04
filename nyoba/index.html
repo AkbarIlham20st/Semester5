@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Side Navbar Collapsible dengan Ikon</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <style>
+    /* Gaya untuk body */
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #fff;
+    }
+
+    /* Header di atas halaman */
+    .header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      background-color: #125938;
+      color: white;
+      text-align: center;
+      padding: 20px 0;
+      z-index: 1000;
+    }
+
+    .header h1 {
+      margin: 0;
+      font-size: 20px;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      height: 100%;
+      width: 250px;
+      position: fixed;
+      top: 62px;
+      left: 0;
+      background-color: #125938;
+      overflow-x: hidden;
+      transition: 0.3s;
+    }
+
+    /* Link di sidebar */
+    .sidebar a {
+      display: flex;
+      align-items: center;
+      padding: 10px 15px;
+      text-decoration: none;
+      font-size: 18px;
+      color: #ddd;
+      transition: 0.3s;
+    }
+
+    .sidebar a i {
+      margin-right: 10px; /* Jarak ikon dan teks */
+      font-size: 20px;
+    }
+
+    /* Hover efek pada link */
+    .sidebar a:hover {
+      background-color: #575757;
+      color: white;
+    }
+
+    /* Sidebar dalam kondisi collapsed */
+    .sidebar.collapsed {
+      width: 80px; /* Sidebar lebih kecil */
+    }
+
+    .sidebar.collapsed a {
+      justify-content: center;
+    }
+
+    .sidebar.collapsed a span {
+      display: none; /* Sembunyikan teks */
+    }
+
+    .sidebar.collapsed a i {
+      margin: 0; /* Hilangkan jarak pada ikon */
+    }
+
+    /* Konten utama */
+    .main-content {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px; 
+      margin-left: 250px;
+      margin-top: 120px;
+      padding: 20px;
+      transition: margin-left 0.3s;
+    }
+
+    .main-content.collapsed {
+      margin-left: 80px; /* Sesuaikan margin dengan sidebar collapsed */
+    }
+
+    /* Tombol toggle */
+    .toggle-btn {
+      position: fixed;
+      top: 10px;
+      left: 20px;
+      background-color: #11111149;
+      color: #fff;
+      border: none;
+      padding: 10px 15px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: 0.2s;
+      z-index: 1001;
+    }
+
+    .toggle-btn:hover {
+      background-color: #575757;
+    }
+    .container {
+        background-color: #6ba3be;
+        max-width: 200px;
+        width: 100%;
+        margin-top: 20px;
+        border: 3px solid #274d60;
+        border-radius: 10px;
+    }
+    h2 {
+        color: #ffffff;
+        font-size: large;
+        margin: 10px;
+        text-align: center;
+    }
+    #webcam-stream {
+        width: 100%;
+        height: auto;
+        
+    }
+
+    .float{
+        display: flex;
+        position:fixed;
+        width:60px;
+        height:60px;
+        bottom:40px;
+        right:40px;
+        background-color:#0C9;
+        color:#FFF;
+        border-radius:50px;
+        box-shadow: 2px 2px 3px #999;
+        align-items: center;
+        font-size: 76pt;
+        text-decoration: none;
+        
+    }
+
+    .my-float{
+        margin-top:2px;
+    }
+    .hapus {
+      background-color: red;
+      padding: 10px;
+      border-radius: 3px;
+      margin-right: 3px;
+      font-size: large;
+      font-weight: bolder;
+      color: white;
+    }
+    .row {
+      margin: 3px;
+      display: flex;
+    }
+    a.button {
+    padding: 10px;
+    border: 1px outset buttonborder;
+    border-radius: 3px;
+    color: buttontext;
+    background-color: #0c969c;
+    color: #fff;
+    font-weight: bold;
+    font-size: large;
+    text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <div class="header">
+    <h1>SimuGuard</h1>
+  </div>
+
+  <!-- Tombol untuk toggle -->
+  <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
+
+  <!-- Sidebar -->
+  <div class="sidebar" id="sidebar">
+    <a href="/"><i>🏠</i><span>Home</span></a>
+    <a href="/history"><i>📑</i><span>History</span></a>
+  </div>
+  
+  <div>
+    <!-- Konten utama -->
+    <div class="main-content" id="main-content">
+      <!-- <div class="container">
+           Data dari database akan ditambahkan secara dinamis di sini 
+      </div> -->
+    </div>
+    <!-- Float Button -->
+    <div>
+        <a href="/form" class="float">+</a>
+    </div>
+  </div>
+  
+
+  <script>
+    // Fungsi untuk toggle sidebar
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      const mainContent = document.getElementById('main-content');
+      sidebar.classList.toggle('collapsed');
+      mainContent.classList.toggle('collapsed');
+    }
+  </script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      fetch('http://localhost:3000/api/users') // Memanggil endpoint baru
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.json();
+        })
+        .then((data) => {
+          const container = document.querySelector('.main-content'); // Targetkan elemen container
+          container.innerHTML = ''; // Kosongkan isi kontainer terlebih dahulu
+
+          // Loop melalui data dan tambahkan elemen baru untuk setiap pengguna
+          data.forEach((user) => {
+            const userDiv = document.createElement('div');
+            userDiv.classList.add('user');
+            userDiv.innerHTML = `
+              <div class="container">
+                <h2>${user.nomor_induk}</h2>
+                
+                <img src="${user.webcam_stream}" onerror="this.src='uploads/error.jpg'" alt="Webcam Stream" width="100%">
+
+                <h2>${user.nama}</h2>
+                <div class="row">
+                  <button class="hapus" data-id="${user.nomor_induk}">Hapus</button>
+                  <a href="${user.webcam_stream}" class="button" target="_blank" rel="noopener noreferrer">Lihat</a>
+                </div>
+              </div>
+            `;
+            container.appendChild(userDiv);
+          });
+
+          // Tambahkan event listener ke setiap tombol "Hapus"
+          const deleteButtons = document.querySelectorAll('.hapus');
+          deleteButtons.forEach((button) => {
+            button.addEventListener('click', (event) => {
+              const id = button.getAttribute('data-id');
+
+              fetch(`http://localhost:3000/api/users/${id}`, {
+                method: 'DELETE',
+              })
+                .then((response) => {
+                  if (!response.ok) {
+                    throw new Error('Gagal menghapus data');
+                  }
+                  return response.json();
+                })
+                .then(() => {
+                  alert(`Data dengan Nomor Induk ${id} berhasil dihapus.`);
+                  button.closest('.user').remove(); // Hapus elemen dari DOM
+                })
+                .catch((error) => {
+                  console.error('Error:', error);
+                  alert('Gagal menghapus data.');
+                });
+            });
+          });
+        })
+        .catch((error) => {
+          console.error('Error fetching data:', error);
+        });
+    });
+
+  </script>
+  <script src="https://kit.fontawesome.com/1453c24337.js" crossorigin="anonymous"></script>
+  
+</body>
+</html>
